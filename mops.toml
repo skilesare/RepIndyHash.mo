@@ -1,0 +1,14 @@
+[package]
+name = "icrc7.mo"
+version = "0.1.0"
+description = "icrc7 for motoko"
+repository = ""
+keywords = [ "nft" ]
+license = "MIT"
+
+[dependencies]
+base = "https://github.com/dfinity/motoko-base#moc-0.10.0"
+vector = "0.2.0"
+sha2 = "0.0.4"
+encoding = "https://github.com/aviate-labs/encoding.mo#v0.4.1"
+array = "https://github.com/aviate-labs/array.mo#v0.2.1"
