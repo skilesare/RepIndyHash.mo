@@ -10,6 +10,7 @@ import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
 
 module {
+  /// The Type used to express ICRC3 values
   public type Value = { 
     #Blob : Blob; 
     #Text : Text; 
@@ -20,6 +21,8 @@ module {
   };
 
   // Also see https://github.com/dfinity/ic-hs/blob/master/src/IC/HTTP/RequestId.hs
+
+  ///Creates the represntatinally independent hash of a Value
   public func hash_val(v : Value) : [Nat8] {
     encode_val(v) |> Sha256.fromArray(#sha256, _) |> Blob.toArray _
   };

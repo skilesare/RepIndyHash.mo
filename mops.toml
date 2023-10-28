@@ -2,7 +2,7 @@
 name = "icrc7.mo"
 version = "0.1.0"
 description = "icrc7 for motoko"
-repository = ""
+repository = "https://github.com/skilesare/RepIndyHash.mo"
 keywords = [ "nft" ]
 license = "MIT"
 

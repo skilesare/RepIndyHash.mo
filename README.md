@@ -2,7 +2,7 @@
 
 # THIS IS ALPHA and NOT VALIDATED DO NOT USE IN PROD
 
-Review here:
+Review here: https://forum.dfinity.org/t/review-request-representationally-independent-hash-motoko/24050
 
 ICRC3 requires that transations be held in a Value type:
 
