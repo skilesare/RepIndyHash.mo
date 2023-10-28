@@ -1,5 +1,9 @@
 # RepIndyHash.mo
 
+# THIS IS ALPHA and NOT VALIDATED DO NOT USE IN PROD
+
+Review here:
+
 ICRC3 requires that transations be held in a Value type:
 
 ```
