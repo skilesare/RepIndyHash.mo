@@ -1,14 +1,14 @@
 [package]
-name = "icrc7.mo"
+name = "rep-indy-hash"
 version = "0.1.0"
-description = "icrc7 for motoko"
+description = "Representationally Independent Hash for motoko"
 repository = "https://github.com/skilesare/RepIndyHash.mo"
-keywords = [ "nft" ]
+keywords = [ "hash", "ICRC3" ]
 license = "MIT"
 
 [dependencies]
-base = "https://github.com/dfinity/motoko-base#moc-0.10.0"
+base = "https://github.com/dfinity/motoko-base#moc-0.10.0@a15ca7cd26335505e103288654f480a44463d844"
 vector = "0.2.0"
 sha2 = "0.0.4"
-encoding = "https://github.com/aviate-labs/encoding.mo#v0.4.1"
-array = "https://github.com/aviate-labs/array.mo#v0.2.1"
+"encoding" = "https://github.com/aviate-labs/encoding.mo#v0.4.1@2711d18727e954b11afc0d37945608512b5fbce2"
+"array" = "https://github.com/aviate-labs/array.mo#v0.2.1@89bb25b7f24ab31082ee3d843d720404eb1d0304"
