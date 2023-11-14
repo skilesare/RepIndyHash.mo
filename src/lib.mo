@@ -8,7 +8,7 @@ import Blob "mo:base/Blob";
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
-import IntX "mo:numbers/IntX";
+import IntX "mo:motoko_numbers/IntX";
 
 module {
   /// The Type used to express ICRC3 values
