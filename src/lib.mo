@@ -8,6 +8,7 @@ import Blob "mo:base/Blob";
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
+import IntX "mo:numbers/IntX";
 
 module {
   /// The Type used to express ICRC3 values
@@ -58,6 +59,13 @@ module {
   };
 
   func sleb128(i : Int) : [Nat8] {
+    let aBuf = Buffer.Buffer<Nat8>(1);
+    IntX.encodeInt(aBuf, i, #signedLEB128);
+
+    Buffer.toArray(aBuf);
+  };
+
+  /* func sleb128(i : Int) : [Nat8] {
     let isNeg = i < 0;
     var result = Vec.new<Nat8>();
     var value = if (isNeg) -i else i;
@@ -85,7 +93,7 @@ module {
         Vec.add(result, Nat8.fromNat(Int.abs(byte)));
     };
     Vec.toArray(result);
-  };
+  }; */
 
   func h(b1 : Blob) : Blob {
     Sha256.fromBlob(#sha256, b1);

@@ -1,2 +1,0 @@
-- Add a method to update the settings for token info
-- rewrite the set order when updating the owners to nft index
