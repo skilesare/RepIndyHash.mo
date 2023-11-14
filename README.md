@@ -4,7 +4,9 @@
 
 Review here: https://forum.dfinity.org/t/review-request-representationally-independent-hash-motoko/24050
 
-ICRC3 requires that transations be held in a Value type:
+See https://github.com/dfinity/ICRC-1/blob/icrc-3/standards/ICRC-3/HASHINGVALUES.md for pseudo cod
+
+ICRC3 requires that transactions be held in a Value type:
 
 ```
 type Value = variant { 
