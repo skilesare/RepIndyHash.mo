@@ -1,14 +1,13 @@
 
 import Sha256 "mo:sha2/Sha256";
-import Text "mo:base/Text";
-import Array "mo:base/Array";
-import Nat8 "mo:base/Nat8";
-import Vec "mo:vector";
-import Blob "mo:base/Blob";
-import Int "mo:base/Int";
-import Iter "mo:base/Iter";
-import Buffer "mo:base/Buffer";
-import IntX "mo:motoko_numbers/IntX";
+import Text "mo:core/Text";
+import Array "mo:core/Array";
+import Nat8 "mo:core/Nat8";
+import Blob "mo:core/Blob";
+import Int "mo:core/Int";
+import Iter "mo:core/Iter";
+import List "mo:core/List";
+import Leb128 "mo:leb128";
 
 module {
   /// The Type used to express ICRC3 values
@@ -36,80 +35,34 @@ module {
       case (#Int(i))    { sleb128(i) };
       case (#Array(a))  { arrayConcat(Iter.map(a.vals(), hash_val)); };
       case (#Map(m))    {
-        let entries : Buffer.Buffer<Blob> = Buffer.fromIter(Iter.map(m.vals(), func ((k : Text, v : Value)) : Blob {
-            Blob.fromArray(arrayConcat([ hash_val(#Text(k)), hash_val(v) ].vals()));
-        }));
-        entries.sort(Blob.compare); // No Array.compare, so go through blob
-        arrayConcat(Iter.map(entries.vals(), Blob.toArray));
+        let entries = List.empty<Blob>();
+        for((k, val) in m.vals()) {
+            List.add(entries, Blob.fromArray(arrayConcat([ hash_val(#Text(k)), hash_val(val) ].vals())));
+        };
+        List.sortInPlace(entries, Blob.compare); 
+        arrayConcat(Iter.map(List.toArray(entries).vals(), Blob.toArray));
       }
     }
   };
 
   func leb128(nat : Nat) : [Nat8] {
-    var n = nat;
-    let buf = Vec.new<Nat8>();
-    loop {
-      if (n <= 127) {
-        Vec.add(buf, Nat8.fromNat(n));
-        return Vec.toArray(buf);
-      };
-      Vec.add(buf, Nat8.fromIntWrap(n) | 0x80);
-      n /= 128;
-    }
+    Leb128.toUnsignedBytes(nat)
   };
 
   func sleb128(i : Int) : [Nat8] {
-    let aBuf = Buffer.Buffer<Nat8>(1);
-    IntX.encodeInt(aBuf, i, #signedLEB128);
-
-    Buffer.toArray(aBuf);
+    Leb128.toSignedBytes(i)
   };
-
-  /* func sleb128(i : Int) : [Nat8] {
-    let isNeg = i < 0;
-    var result = Vec.new<Nat8>();
-    var value = if (isNeg) -i else i;
-    label proc loop {
-        // Exit conditions
-        if (value == 0) {
-            if (isNeg) {
-                if (Vec.size(result) == 0) {
-                    break proc;
-                } else if (Vec.get(result, Vec.size(result) - 1) >= 128) {
-                    break proc;
-                }
-            } else {
-                break proc;
-            };
-        };
-
-        var byte = value % 128;
-        value /= 128;
-
-        if (value != 0 or (isNeg and byte != 0)) {
-            byte := byte + 128;
-        };
-
-        Vec.add(result, Nat8.fromNat(Int.abs(byte)));
-    };
-    Vec.toArray(result);
-  }; */
 
   func h(b1 : Blob) : Blob {
     Sha256.fromBlob(#sha256, b1);
   };
 
-  // Missing in standard library? Faster implementation?
-  func bufferAppend<X>(buf : Vec.Vector<X>, a : [X]) {
-    Vec.addFromIter<X>(buf, a.vals());
-  };
-
   // Array concat
   func arrayConcat<X>(as : Iter.Iter<[X]>) : [X] {
-    let buf = Vec.new<X>();
+    let buf = List.empty<X>();
     for(thisItem in as){
-      Vec.addFromIter(buf, thisItem.vals());
+      List.addAll(buf, thisItem.vals());
     };
-    Vec.toArray(buf);
+    List.toArray(buf);
   };
 };

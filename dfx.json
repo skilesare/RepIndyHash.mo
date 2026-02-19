@@ -1,5 +1,11 @@
 {
-    
+    "canisters": {
+      "test": {
+
+        "main": "src/emptyactor.mo",
+        "type": "motoko"
+      }
+    },
     "defaults": {
         "build": {
             "args": "",
