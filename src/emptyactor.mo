@@ -1,8 +1,7 @@
 import lib ".";
 
-persistent actor{
+persistent actor {
 
-  let x = 1;
 
   public shared func test() : async [Nat8]{
 

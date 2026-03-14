@@ -1,3 +1,8 @@
+# v0.2.1
+
+- updated core to 2.1.0
+- updated moc to 1.3.0
+
 # v0.2.0
 
 - more tests
