@@ -46,7 +46,7 @@ import RepIndy "mo:rep-indy-hash";
 // example...
 let #ok(hello_world_foo) = Hex.decode("b0c6f9191e37dceafdfc47fbfc7e9cc95f21c7b985c2f7ba5855015c2a8f13ac");
 
-assert Blob.fromArray(ReIndy.hash_val(#Map([
+assert Blob.fromArray(RepIndy.hash_val(#Map([
     ("name", #Text("foo")),
     ("message", #Text("Hello World!")),
     ("answer", #Nat(42))
@@ -100,6 +100,44 @@ the hash of an Int is the sleb128 encoding of the number
 the hash of an Array is the hash of the concatenation of the hashes of all the elements of the array
 the hash of a Map is the hash of the concatenation of all the hashed items of the map sorted. A hashed item is the tuple composed by the hash of the key and the hash of the value.
 
+
+## Hash compatibility
+
+Checked on 2026-10-24 against the independent oracle in `test/oracle` (a Rust transcription of the
+ICRC-3 [HASHINGVALUES.md](https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-3/HASHINGVALUES.md)
+pseudocode with shortest-form LEB128/SLEB128, cross-checked against DFINITY's `icrc-ledger-types`):
+1,866 fixed vectors (committed in `test/icrc3_vectors.mo`) plus 4,000 random values.
+
+Only `#Int` values differ between versions. `#Nat`, `#Text`, `#Blob`, `#Array` and `#Map` hash the
+same in every version, so a value without an affected `#Int` anywhere inside it has the same hash
+everywhere.
+
+| Version | `#Int` encoding | Differs from the ICRC-3 spec for |
+|---|---|---|
+| 0.1.0 | hand-written, not SLEB128 | every negative `#Int`; `#Int(0)` (encoded as no bytes); `#Int` >= 0 whose last 7-bit group has bit 6 set (64..127, 8192..16383, ...) |
+| 0.1.1, 0.1.2 | SLEB128 with an extra sign byte | `#Int` equal to -2^(7k+6): -64, -8192, -1048576, -2^27, ..., -2^62, ... (-64 is written `C0 7F`; the spec's shortest form is `40`) |
+| 0.2.0 and later | shortest-form SLEB128 | none found |
+
+0.2.0 changed the hash of those values without saying so. 0.1.2 is the maintained legacy line: it
+reproduces the 0.1.1 hashes byte for byte. Nothing reproduces 0.1.0 except 0.1.0 itself.
+
+**Who must stay on 0.1.x.** Anyone who verifies or extends an existing ICRC-3 log whose blocks were
+hashed with 0.1.x and contain an affected `#Int`. Each block stores `phash`, the hash of the block
+before it, so rehashing an affected old block with 0.2.x gives a value that no longer matches the
+stored `phash` (or the certified tip hash). If your log never contains an affected `#Int`, you can
+upgrade without any change to existing hashes.
+
+**Moving to the spec hash.** A log can switch at a block boundary: the first block appended after the
+upgrade carries a `phash` computed with the new hash. From then on the chain is consistent with the
+spec, but a verifier must hash the blocks before the switch with the legacy version and needs to know
+the switch point; ICRC-3 has no field for announcing it. Verifiers that follow the spec (other
+implementations, indexers, explorers) already reject the affected legacy blocks.
+
+**DFINITY's Rust implementation.** `icrc-ledger-types` (`Value::hash`, 0.2.0) hashes `#Int` values
+>= 0 with unsigned LEB128, a known deviation marked as a TODO in its source. For `#Int` >= 0 whose
+last 7-bit group has bit 6 set (64..127, 8192..16383, ...) its hash differs from the spec and from
+this library, and it panics on integers outside the 128-bit range. This library follows the spec.
+If a block must verify under both, store non-negative amounts as `#Nat`.
 
 # Credit
 
