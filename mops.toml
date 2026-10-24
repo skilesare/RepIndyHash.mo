@@ -3,7 +3,7 @@ name = "rep-indy-hash"
 version = "0.1.2"
 description = "Representationally Independent Hash for motoko"
 repository = "https://github.com/skilesare/RepIndyHash.mo"
-keywords = [ "hash", "ICRC3" ]
+keywords = [ "hash", "icrc3" ]
 license = "MIT"
 
 [dependencies]
